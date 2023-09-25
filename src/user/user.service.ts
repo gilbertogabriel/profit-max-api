@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { CreateUserDto } from './dto/create-user.dto';
-import { UpdateUserDto } from './dto/update-user.dto';
+import { RestorePasswordDto } from './dto/restore-password.dto';
 
 @Injectable()
 export class UserService {
@@ -16,11 +16,25 @@ export class UserService {
     return `This action returns a #${id} user`;
   }
 
-  update(id: number, updateUserDto: UpdateUserDto) {
+  update(id: number, updateUserDto: RestorePasswordDto) {
     return `This action updates a #${id} user`;
   }
 
   remove(id: number) {
     return `This action removes a #${id} user`;
   }
+
+  subscribeToken(){
+
+  }
+
+  sendRecoveryEmail(restorePasswordDto: RestorePasswordDto) {
+    const min = 1000;
+    const max = 9999;
+    const token = Math.floor(Math.random() * (max - min + 1)) + min;
+    this.subscribeToken();
+
+
+  }
+
 }
