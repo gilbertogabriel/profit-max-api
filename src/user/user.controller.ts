@@ -2,6 +2,8 @@ import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/commo
 import { UserService } from './user.service';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
+import { UserObject } from './interfaces/interfaces';
+import { FindUserDto } from './dto/find-user.dto';
 
 @Controller('user')
 export class UserController {
@@ -12,15 +14,16 @@ export class UserController {
     return this.userService.create(createUserDto);
   }
 
-  @Get('get')
-  findAll() {
-    return this.userService.findAll();
+  @Post('get/login')
+  findAll(@Body() findUserDto: FindUserDto) {
+    console.log(findUserDto)
+    return this.userService.searchUserByEmail(findUserDto);
   }
 
-  @Get('get/:id')
-  findOne(@Param('id') id: string) {
-    return this.userService.findOne(+id);
-  }
+  // @Get('get/:id')
+  // findOne(@Param('id') id: string) {
+  //   return this.userService.findOne(+id);
+  // }
 
   @Patch(':id')
   update(@Param('id') id: string, @Body() updateUserDto: UpdateUserDto) {
