@@ -1,37 +1,33 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/common';
-import { UserService } from './user.service';
+import { Body, Controller, Post, Res } from '@nestjs/common';
+import { Response } from 'express';
+import { httpResponseDecorator } from 'src/decorator/http-response-decorator';
 import { CreateUserDto } from './dto/create-user.dto';
-import { UpdateUserDto } from './dto/update-user.dto';
-import { UserObject } from './interfaces/interfaces';
 import { FindUserDto } from './dto/find-user.dto';
+import { UserService } from './user.service';
 
 @Controller('user')
 export class UserController {
   constructor(private readonly userService: UserService) {}
 
   @Post('create')
-  create(@Body() createUserDto: CreateUserDto) {
-    return this.userService.create(createUserDto);
+  async create(@Body() createUserDto: CreateUserDto, @Res() res: Response): Promise<void> {
+    const result = await this.userService.create(createUserDto);
+    return httpResponseDecorator(res, result)
   }
 
   @Post('get/login')
-  findAll(@Body() findUserDto: FindUserDto) {
-    console.log(findUserDto)
-    return this.userService.searchUserByEmail(findUserDto);
+  async findAll(@Body() findUserDto: FindUserDto, @Res() res: Response): Promise<void> {
+    const result = await this.userService.searchUserByEmail(findUserDto);
+    return httpResponseDecorator(res, result)
   }
 
-  // @Get('get/:id')
-  // findOne(@Param('id') id: string) {
-  //   return this.userService.findOne(+id);
+  // @Patch(':id')
+  // update(@Param('id') id: string, @Body() updateUserDto: UpdateUserDto) {
+  //   return this.userService.update(+id, updateUserDto);
   // }
 
-  @Patch(':id')
-  update(@Param('id') id: string, @Body() updateUserDto: UpdateUserDto) {
-    return this.userService.update(+id, updateUserDto);
-  }
-
-  @Delete('remove/:id')
-  remove(@Param('id') id: string) {
-    return this.userService.remove(+id);
-  }
+  // @Delete('remove/:id')
+  // remove(@Param('id') id: string) {
+  //   return this.userService.remove(+id);
+  // }
 }
