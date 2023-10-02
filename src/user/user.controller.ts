@@ -1,7 +1,7 @@
 import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/common';
 import { UserService } from './user.service';
 import { CreateUserDto } from './dto/create-user.dto';
-import { RestorePasswordDto } from './dto/restore-password.dto';
+import { RestorePasswordDto } from '../email/dto/restore-password.dto';
 
 @Controller('user')
 export class UserController {
@@ -30,10 +30,5 @@ export class UserController {
   @Delete(':id')
   remove(@Param('id') id: string) {
     return this.userService.remove(+id);
-  }
-
-  @Post('restore-password')
-  restorePassword(@Body() restorePasswordDto: RestorePasswordDto) {
-    return
   }
 }

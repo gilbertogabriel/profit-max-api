@@ -22,7 +22,7 @@ model TOKEN {
   DTCRIACAO DateTime @default(now())
   DTEXPIRA  DateTime @default(now())
   USUARIO   USUARIO  @relation(fields: [IDUSUARIO], references: [IDUSUARIO])
-  IDUSUARIO Int
+  USEREMAIL String   @unique
 }
 
 model INVESTIMENTO {

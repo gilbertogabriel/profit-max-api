@@ -1,21 +1,24 @@
 import {Module} from '@nestjs/common';
 import {MailerModule} from '@nestjs-modules/mailer';
+import {EmailServiceService} from "./email-service.service";
+import { EmailController } from './email.controller';
+import { EmailService } from './email.service';
 
 @Module({
     imports: [
         MailerModule.forRoot({
             transport: {
-                host: 'seu-servidor-de-email.com',
-                port: 587,
+                host: 'profit-max-recovery@proton.me',
+                port: 487,
                 secure: true,
                 auth: {
-                    user: 'seu-email@gmail.com',
-                    pass: 'sua-senha',
+                    user: 'profitmaxrecovery@gmail.com',
+                    pass: 'profitehtop',
                 },
             },
         }),
     ],
-    controllers: [],
-    providers: [],
+    controllers: [EmailController],
+    providers: [EmailService],
 })
 export class EmailModule {}

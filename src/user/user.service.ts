@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { CreateUserDto } from './dto/create-user.dto';
-import { RestorePasswordDto } from './dto/restore-password.dto';
+import { RestorePasswordDto } from '../email/dto/restore-password.dto';
 
 @Injectable()
 export class UserService {
@@ -23,18 +23,4 @@ export class UserService {
   remove(id: number) {
     return `This action removes a #${id} user`;
   }
-
-  subscribeToken(){
-
-  }
-
-  sendRecoveryEmail(restorePasswordDto: RestorePasswordDto) {
-    const min = 1000;
-    const max = 9999;
-    const token = Math.floor(Math.random() * (max - min + 1)) + min;
-    this.subscribeToken();
-
-
-  }
-
 }
