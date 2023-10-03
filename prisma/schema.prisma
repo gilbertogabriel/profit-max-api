@@ -14,6 +14,7 @@ model USUARIO {
   EMAIL        String         @unique
   INVESTIMENTO INVESTIMENTO[]
   TOKEN        TOKEN[]
+  DELETED_AT   DateTime?
 }
 
 model TOKEN {
@@ -22,7 +23,6 @@ model TOKEN {
   DTCRIACAO DateTime @default(now())
   DTEXPIRA  DateTime @default(now())
   USUARIO   USUARIO  @relation(fields: [IDUSUARIO], references: [IDUSUARIO])
-  USEREMAIL String   @unique
 }
 
 model INVESTIMENTO {

@@ -1,19 +1,30 @@
-import { Injectable } from '@nestjs/common';
+import {Injectable} from '@nestjs/common';
 import {RestorePasswordDto} from "./dto/restore-password.dto";
 import {EmailRepository} from "./email.repository";
+import {SendEmailDto} from "./dto/send-email.dto";
+import {SendEmailParams} from "./interfaces/send-email-interface";
+import {CompareRecoveryKeyInterface} from "./interfaces/compare-recovery-key-interface";
 
 @Injectable()
 export class EmailService {
     constructor(private readonly emailRepository: EmailRepository) {
     }
-    subscriveToken() {
 
+    compareRecoveryKey(campareEmail:CompareRecoveryKeyInterface) {
+
+        return this.emailRepository.compareRecoveryKey(campareEmail.email, campareEmail.token);
     }
-    sendRecoveryEmail(restorePasswordDto: RestorePasswordDto) {
+
+    async sendRecoveryEmail(email: string) {
 
         const min = 1000;
         const max = 9999;
         const token = Math.floor(Math.random() * (max - min + 1)) + min;
-        return this.emailRepository.sendRecoveryKey(token.toString());
+
+       return this.emailRepository.createToken(email, token.toString())
+
+    }
+    async changeUserPassword(email:string, password: string) {
+        return this.emailRepository.changeUserPassword(password, email)
     }
 }
