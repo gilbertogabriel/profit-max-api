@@ -56,3 +56,9 @@ model CATEGORIA {
   DESCRICAO   String
   PROFIT      PROFIT[]
 }
+
+model ACESS_CODE {
+  IDACESSO Int     @id @default(autoincrement())
+  USUARIO  USUARIO @relation(fields: [IDUSUARIO], references: [IDUSUARIO])
+  CODE     Int
+}
