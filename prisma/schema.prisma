@@ -13,7 +13,9 @@ model USUARIO {
   SENHA        String
   EMAIL        String         @unique
   INVESTIMENTO INVESTIMENTO[]
+  ACESS_CODE   ACESS_CODE[]
   TOKEN        TOKEN[]
+  DELETED_AT   DateTime?
 }
 
 model TOKEN {
@@ -21,8 +23,8 @@ model TOKEN {
   TOKEN     String
   DTCRIACAO DateTime @default(now())
   DTEXPIRA  DateTime @default(now())
-  USUARIO   USUARIO  @relation(fields: [IDUSUARIO], references: [IDUSUARIO])
   IDUSUARIO Int
+  USUARIO   USUARIO  @relation(fields: [IDUSUARIO], references: [IDUSUARIO])
 }
 
 model INVESTIMENTO {
@@ -55,4 +57,14 @@ model CATEGORIA {
   IDCATEGORIA Int      @id @default(autoincrement())
   DESCRICAO   String
   PROFIT      PROFIT[]
+}
+
+model ACESS_CODE {
+  IDACESSO   Int      @id @default(autoincrement())
+  IDUSUARIO  Int
+  USUARIO    USUARIO  @relation(fields: [IDUSUARIO], references: [IDUSUARIO])
+  VERIFICADO Boolean  @default(false)
+  DTCRIACAO  DateTime @default(now())
+  DTEXPIRA   DateTime
+  CODE       Int
 }

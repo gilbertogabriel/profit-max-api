@@ -1,0 +1,31 @@
+/*
+  Warnings:
+
+  - You are about to drop the column `CATEGORIAS` on the `INVESTIMENTO` table. All the data in the column will be lost.
+  - Changed the type of `TPPROFIT` on the `PROFIT` table. No cast exists, the column would be dropped and recreated, which cannot be done if there is data, since the column is required.
+
+*/
+-- AlterTable
+ALTER TABLE `INVESTIMENTO` DROP COLUMN `CATEGORIAS`;
+
+-- AlterTable
+ALTER TABLE `PROFIT` DROP COLUMN `TPPROFIT`,
+    ADD COLUMN `TPPROFIT` BOOLEAN NOT NULL;
+
+-- AlterTable
+ALTER TABLE `USUARIO` ADD COLUMN `DELETED_AT` DATETIME(3) NULL;
+
+-- CreateTable
+CREATE TABLE `ACESS_CODE` (
+    `IDACESSO` INTEGER NOT NULL AUTO_INCREMENT,
+    `IDUSUARIO` INTEGER NOT NULL,
+    `VERIFICADO` BOOLEAN NOT NULL DEFAULT false,
+    `DTCRIACAO` DATETIME(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3),
+    `DTEXPIRA` DATETIME(3) NOT NULL,
+    `CODE` INTEGER NOT NULL,
+
+    PRIMARY KEY (`IDACESSO`)
+) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
+
+-- AddForeignKey
+ALTER TABLE `ACESS_CODE` ADD CONSTRAINT `ACESS_CODE_IDUSUARIO_fkey` FOREIGN KEY (`IDUSUARIO`) REFERENCES `USUARIO`(`IDUSUARIO`) ON DELETE RESTRICT ON UPDATE CASCADE;
