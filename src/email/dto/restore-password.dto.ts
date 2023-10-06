@@ -1,4 +1,4 @@
 export class RestorePasswordDto {
-    token: string;
+    token: number;
     userEmail: string;
 }

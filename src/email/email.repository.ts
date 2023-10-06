@@ -1,6 +1,6 @@
 import {Injectable} from "@nestjs/common";
 import {MailerService} from "@nestjs-modules/mailer";
-import {PrismaClient} from "@prisma/client";
+import {ACESS_CODE, PrismaClient, USUARIO} from "@prisma/client";
 
 @Injectable()
 export class EmailRepository {
@@ -21,7 +21,7 @@ export class EmailRepository {
         })
     }
 
-    async getUserByEmail(email: string) {
+    async getUserByEmail(email: string): Promise<USUARIO> {
         return this.prisma.uSUARIO.findFirst({
             where: {
                 EMAIL: email
@@ -29,38 +29,45 @@ export class EmailRepository {
         })
     }
 
-    async createToken(email: string, token:string) {
+    async createToken(email: string, token: number): Promise<ACESS_CODE> {
         const user = await this.getUserByEmail(email);
-       return this.prisma.tOKEN.create({
+        return this.prisma.aCESS_CODE.create({
                 data: {
-                    TOKEN: token,
+                    CODE: token,
+                    VERIFICADO: false,
                     DTCRIACAO: new Date(),
                     DTEXPIRA: new Date(Date.now() + 3600000),
                     USUARIO: {
                         connect: {
-                            EMAIL: email
-                        },
-                    },
+                            IDUSUARIO: user.IDUSUARIO,
+                        }
+                    }
                 },
             }
         )
     }
 
-    async compareRecoveryKey(email: string, token: string) {
-      return this.prisma.tOKEN.findFirst({
+    async compareRecoveryKey(email: string, token: number) {
+        const user = await this.getUserByEmail(email);
+        return this.prisma.aCESS_CODE.updateMany({
             where: {
-                TOKEN: token,
+                CODE: token,
                 USUARIO: {
-                    EMAIL: email,
-                },
+                    IDUSUARIO: user.IDUSUARIO
+                }
             },
+            data: {
+                VERIFICADO: true
+            }
+
         })
     }
 
-    async changeUserPassword(password: string, email: string) {
+    async changeUserPassword(password: string, email: string): Promise<USUARIO> {
         return this.prisma.uSUARIO.update({
             where: {
                 EMAIL: email,
+
             },
             data: {
                 SENHA: password,

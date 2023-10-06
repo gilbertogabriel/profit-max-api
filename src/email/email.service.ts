@@ -21,10 +21,14 @@ export class EmailService {
         const max = 9999;
         const token = Math.floor(Math.random() * (max - min + 1)) + min;
 
-       return this.emailRepository.createToken(email, token.toString())
+       return this.emailRepository.createToken(email, token)
 
     }
-    async changeUserPassword(email:string, password: string) {
-        return this.emailRepository.changeUserPassword(password, email)
+    async changeUserPassword(email:string, password: string, confirmPassword: string) {
+        if(password !== confirmPassword) {
+            throw new Error('As senhas não conferem')
+        }else {
+            return this.emailRepository.changeUserPassword(password, email)
+        }
     }
 }
