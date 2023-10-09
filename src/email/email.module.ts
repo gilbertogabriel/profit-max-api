@@ -8,12 +8,10 @@ import {EmailRepository} from "./email.repository";
     imports: [
         MailerModule.forRoot({
             transport: {
-                host: 'profit-max-recovery@proton.me',
-                port: 487,
-                secure: true,
+                service: 'Gmail',
                 auth: {
                     user: 'profitmaxrecovery@gmail.com',
-                    pass: 'profitehtop',
+                    pass: 'profitehtopdemais',
                 },
             },
         }),
