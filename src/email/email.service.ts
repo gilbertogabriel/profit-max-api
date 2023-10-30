@@ -21,7 +21,8 @@ export class EmailService {
         const max = 9999;
         const token = Math.floor(Math.random() * (max - min + 1)) + min;
 
-       return this.emailRepository.createToken(email, token)
+       const user_token = await this.emailRepository.createToken(email, token)
+       return await this.emailRepository.sendRecoveryKey(email, token.toString())
 
     }
     async changeUserPassword(email:string, password: string, confirmPassword: string) {

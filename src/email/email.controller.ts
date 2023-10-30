@@ -26,6 +26,6 @@ export class EmailController {
 
     @Post('password')
     changePassword(@Body() changePasswordDto: ChangePasswordDto) {
-        return this.emailService.changeUserPassword(changePasswordDto.userEmail, changePasswordDto.newPassword)
+        return this.emailService.changeUserPassword(changePasswordDto.userEmail, changePasswordDto.newPassword, changePasswordDto.confirmationPassword)
     }
 }
