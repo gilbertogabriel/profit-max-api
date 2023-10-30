@@ -8,10 +8,15 @@ import {EmailRepository} from "./email.repository";
     imports: [
         MailerModule.forRoot({
             transport: {
-                service: 'Gmail',
+                host: 'smtp.office365.com',
+                secure: false,
+                port: 587,
                 auth: {
-                    user: 'profitmaxrecovery@gmail.com',
-                    pass: 'profitehtopdemais',
+                    user: 'profitmax-recovery@outlook.com',
+                    pass: 'Profitehtopdemais',
+                },
+                tls: {
+                    ciphers: 'SSLv3',
                 },
             },
         }),

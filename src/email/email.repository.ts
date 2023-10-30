@@ -13,10 +13,10 @@ export class EmailRepository {
     async sendRecoveryKey(email: string, acess_code: string) {
         const user = await this.getUserByEmail(email)
         await this.mailerService.sendMail({
-            from: '"Recuperção de senha profit-max. 👻" <profitmaxrecovery@gmail.com>',
+            from: '"Recuperção de senha 👻" <profitmax-recovery@outlook.com>',
             to: email,
-            subject: "Olá aqui está seu token de recuperação:"+ acess_code,
-            text: acess_code,
+            subject: "Olá aqui está seu token de recuperação:",
+            text:   "Seu códgio de acesso é :"+acess_code,
         })
     }
 
@@ -31,7 +31,6 @@ export class EmailRepository {
     async createToken(email: string, token: number): Promise<ACESS_CODE> {
         const user = await this.getUserByEmail(email);
 
-        console.log("USER", user)
         return this.prisma.aCESS_CODE.create({
                 data: {
                     CODE: token,
