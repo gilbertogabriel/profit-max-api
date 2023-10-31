@@ -1,8 +1,5 @@
 import {Injectable} from '@nestjs/common';
-import {RestorePasswordDto} from "./dto/restore-password.dto";
 import {EmailRepository} from "./email.repository";
-import {SendEmailDto} from "./dto/send-email.dto";
-import {SendEmailParams} from "./interfaces/send-email-interface";
 import {CompareRecoveryKeyInterface} from "./interfaces/compare-recovery-key-interface";
 
 @Injectable()
