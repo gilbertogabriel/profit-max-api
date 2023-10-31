@@ -14,6 +14,7 @@ model USUARIO {
   EMAIL        String         @unique
   INVESTIMENTO INVESTIMENTO[]
   ACESS_CODE   ACESS_CODE[]
+  TRANSACTIONS TRANSACTIONS[]
   TOKEN        TOKEN[]
   DELETED_AT   DateTime?
 }
@@ -67,4 +68,16 @@ model ACESS_CODE {
   DTCRIACAO  DateTime @default(now())
   DTEXPIRA   DateTime
   CODE       Int
+}
+
+model TRANSACTIONS {
+  IDTRANSACTIONS Int      @id @default(autoincrement())
+  IDUSUARIO      Int
+  USUARIO        USUARIO  @relation(fields: [IDUSUARIO], references: [IDUSUARIO])
+  VALOR          Float
+  NOME           String
+  DESCRICAO      String
+  TIPO           String
+  DTCRIACAO      DateTime @default(now())
+  DTEDICAO       DateTime?
 }
