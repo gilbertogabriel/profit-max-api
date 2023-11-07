@@ -10,9 +10,9 @@ import { BcryptSignature } from 'src/signatures/bcrypt-signature';
 import { JwtSignature } from 'src/signatures/jwt-signature';
 import { ValidationSignature } from 'src/signatures/validator-signature';
 import { HttpResponse } from 'src/utils/http';
-import { badRequest, forbbiden, serverError } from 'src/utils/http-helper';
+import { badRequest, forbbiden, responseOk, serverError } from 'src/utils/http-helper';
 import { CreateUserDto } from './dto/create-user.dto';
-import { UserObject } from './interfaces/user-interfaces';
+import { User, UserObject } from './interfaces/user-interfaces';
 
 @Injectable()
 export class UserService {
@@ -64,38 +64,71 @@ export class UserService {
       return badRequest(error)
 
     const user = await this.findUserByEmail(data.email)
-    const passIsValid = await this.bcrypt.compare(data.senha, user.senha)
 
-    const { TOKEN: token } = await this.findTokenByEmail(user.email)
-    // if (!token)
-      //criar token
+    if (!user)
+     return responseOk({ message: 'User not found' }, false)
+
+    const passIsValid = await this.bcrypt.compare(data.senha, user.senha)
 
     if (!passIsValid)
       return forbbiden(new LoginError('Logir Error: Verify email or password'))
 
-    return { code: 200, status: true, body: { token } }
+    let { TOKEN: token } = await this.findTokenByEmail(user.email)
+    
+    if (!token) {
+      token = this.jwt.encrypt(String(user.id))
+      await this.deleteTokens(user.id)
+      await this.prisma.tOKEN.create({ data: { TOKEN: token, IDUSUARIO: user.id } })
+    }
+
+    return responseOk({ token })
   }
 
-  async findUserByEmail(email: string): Promise<UserObject | null> {
-    const result = await this.prisma.uSUARIO.findUnique({ where: { EMAIL: email } });
-    return { email: result.EMAIL, senha: result.SENHA } || null;
+  async findUserByEmail(email: string): Promise<User | null> {
+
+    try {
+      const result = await this.prisma.uSUARIO.findUnique({ where: { EMAIL: email } });
+
+      if (result)
+        return { id: result.IDUSUARIO, email: result.EMAIL, senha: result.SENHA };
+      
+      return null
+    } catch (err) {
+      return null
+    }
+  }
+
+  async deleteTokens(IDUSUARIO: number): Promise<void> {
+    try {
+      await this.prisma.tOKEN.updateMany({ where: { IDUSUARIO }, data: { SNDELETE: 1 } })
+    } catch (err) {
+      throw err
+    }
   }
 
   async findTokenByEmail(email: string): Promise<string | any>  {
-    const result = await this.prisma.tOKEN.findMany({
-      where: {
-        DTEXPIRA: {
-          gte: new Date()
+    try {
+      const result = await this.prisma.tOKEN.findMany({
+        where: {
+          DTEXPIRA: {
+            gte: new Date()
+          },
+          SNDELETE: 0,
+          USUARIO: {
+            EMAIL: email
+          }
         },
-        USUARIO: {
-          EMAIL: email
+        include: {
+          USUARIO: true
         }
-      },
-      include: {
-        USUARIO: true
-      }
-    });
-
-    return result[0]
+      });
+      
+      if (result.length > 0)
+        return result[0]
+      
+      return { TOKEN: null }
+    } catch (error) {
+      return null
+    }
   }
 }
