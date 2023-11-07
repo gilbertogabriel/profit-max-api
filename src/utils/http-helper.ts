@@ -18,3 +18,9 @@ export const serverError = (error: any): HttpResponse => ({
   , status: false
   , body: new ServerError(error.stack)
 })
+
+export const responseOk = (body: Object, status = true): HttpResponse => ({
+    code: 200
+  , status
+  , body
+})

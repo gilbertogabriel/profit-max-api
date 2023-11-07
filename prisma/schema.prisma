@@ -25,6 +25,7 @@ model TOKEN {
   DTCRIACAO DateTime @default(now())
   DTEXPIRA  DateTime @default(now())
   IDUSUARIO Int
+  SNDELETE  Int      @default(0)
   USUARIO   USUARIO  @relation(fields: [IDUSUARIO], references: [IDUSUARIO])
 }
 
@@ -71,13 +72,13 @@ model ACESS_CODE {
 }
 
 model TRANSACTIONS {
-  IDTRANSACTIONS Int      @id @default(autoincrement())
+  IDTRANSACTIONS Int       @id @default(autoincrement())
   IDUSUARIO      Int
-  USUARIO        USUARIO  @relation(fields: [IDUSUARIO], references: [IDUSUARIO])
+  USUARIO        USUARIO   @relation(fields: [IDUSUARIO], references: [IDUSUARIO])
   VALOR          Float
   NOME           String
   DESCRICAO      String
   TIPO           String
-  DTCRIACAO      DateTime @default(now())
+  DTCRIACAO      DateTime  @default(now())
   DTEDICAO       DateTime?
 }
