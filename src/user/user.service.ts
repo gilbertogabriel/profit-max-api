@@ -58,13 +58,13 @@ export class UserService {
   }
 
   async searchUserByEmail(data: UserObject): Promise<HttpResponse> {
-
+    let userId;
     const error = await this.findUserByEmailValidation.validate(data)
     if (error)
       return badRequest(error)
 
     const user = await this.findUserByEmail(data.email)
-
+    userId = user.id;
     if (!user)
      return responseOk({ message: 'User not found' }, false)
 
@@ -74,7 +74,7 @@ export class UserService {
       return forbbiden(new LoginError('Logir Error: Verify email or password'))
 
     let { TOKEN: token } = await this.findTokenByEmail(user.email)
-    
+
     if (!token) {
       token = this.jwt.encrypt(String(user.id))
       await this.deleteTokens(user.id)

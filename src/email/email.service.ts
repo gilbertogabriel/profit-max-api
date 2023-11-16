@@ -8,7 +8,6 @@ export class EmailService {
     }
 
     compareRecoveryKey(campareEmail:CompareRecoveryKeyInterface) {
-
         return this.emailRepository.compareRecoveryKey(campareEmail.email, campareEmail.token);
     }
 
