@@ -74,14 +74,14 @@ export class UserService {
       return forbbiden(new LoginError('Logir Error: Verify email or password'))
 
     let { TOKEN: token } = await this.findTokenByEmail(user.email)
-
+    
     if (!token) {
       token = this.jwt.encrypt(String(user.id))
       await this.deleteTokens(user.id)
       await this.prisma.tOKEN.create({ data: { TOKEN: token, IDUSUARIO: user.id } })
     }
-    console.log(responseOk({ user }))
-    return responseOk({ user })
+
+    return responseOk({ token, id: user.id })
   }
 
   async findUserByEmail(email: string): Promise<User | null> {
