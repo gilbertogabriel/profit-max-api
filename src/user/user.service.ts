@@ -81,7 +81,7 @@ export class UserService {
       await this.prisma.tOKEN.create({ data: { TOKEN: token, IDUSUARIO: user.id } })
     }
 
-    return responseOk({ token })
+    return responseOk({ token, id: user.id })
   }
 
   async findUserByEmail(email: string): Promise<User | null> {
