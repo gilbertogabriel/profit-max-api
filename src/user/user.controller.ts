@@ -18,6 +18,7 @@ export class UserController {
   @Post('get/login')
   async findAll(@Body() findUserDto: FindUserDto, @Res() res: Response): Promise<void> {
     const result = await this.userService.searchUserByEmail(findUserDto);
+    console.log("Result",result)
     return httpResponseDecorator(res, result)
   }
 
