@@ -6,7 +6,6 @@ datasource db {
   provider = "mysql"
   url      = env("DATABASE_URL")
 }
-
 model USUARIO {
   IDUSUARIO    Int            @id @default(autoincrement())
   NOME         String
@@ -56,25 +55,24 @@ model TRANSACTIONS {
   CATEGORIA       CATEGORIA    @relation(fields: [CATEGORIA_ID], references: [IDCATEGORIA])
   STATUS          STATUS       @relation(fields: [STATUS_ID], references: [IDSTATUS])
 }
-
+//PENDENTE PAGO E AGENDADO
 model STATUS {
-  IDSTATUS                   Int          @id @default(autoincrement())
-  NOME                       String
-  TRANSACTION                TRANSACTIONS @relation(fields: [tRANSACTIONSIDTRANSACTIONS], references: [IDTRANSACTIONS])
-  tRANSACTIONSIDTRANSACTIONS Int
+  IDSTATUS     Int            @id @default(autoincrement())
+  NOME         String
+  TRANSACTIONS TRANSACTIONS[]
 }
 
+//
 model PAYMENT_TYPE {
-  IDPAYMENTTYPE              Int          @id @default(autoincrement())
-  NOME                       String
-  TRANSACTION                TRANSACTIONS @relation(fields: [tRANSACTIONSIDTRANSACTIONS], references: [IDTRANSACTIONS])
-  tRANSACTIONSIDTRANSACTIONS Int
+  IDPAYMENTTYPE Int            @id @default(autoincrement())
+  NOME          String
+  TRANSACTIONS  TRANSACTIONS[]
 }
 
 model CATEGORIA {
-  IDCATEGORIA                Int          @id @default(autoincrement())
-  NOME                       String
-  DESCRICAO                  String
-  TRANSACTION                TRANSACTIONS @relation(fields: [tRANSACTIONSIDTRANSACTIONS], references: [IDTRANSACTIONS])
-  tRANSACTIONSIDTRANSACTIONS Int
+  IDCATEGORIA  Int            @id @default(autoincrement())
+  NOME         String
+  DESCRICAO    String
+  TRANSACTIONS TRANSACTIONS[]
 }
+

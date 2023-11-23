@@ -3,5 +3,11 @@ export class CreateTransactionDto {
     value:number;
     name: string;
     desc?: string;
-    type: string;
+    type: number;
+    paymentDate?: Date;
+    paymentAccount: string;
+    paymentType: string;
+    categoryId: number;
+    statusId: number;
 }
+
