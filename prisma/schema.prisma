@@ -12,7 +12,6 @@ model USUARIO {
   NOME         String
   SENHA        String
   EMAIL        String         @unique
-  INVESTIMENTO INVESTIMENTO[]
   ACESS_CODE   ACESS_CODE[]
   TRANSACTIONS TRANSACTIONS[]
   TOKEN        TOKEN[]
@@ -29,36 +28,12 @@ model TOKEN {
   USUARIO   USUARIO  @relation(fields: [IDUSUARIO], references: [IDUSUARIO])
 }
 
-model INVESTIMENTO {
-  IDINVESTIMENTO Int       @id @default(autoincrement())
-  NOME           String
-  VALOR          Float
-  PRECOMEDIO     Float
-  DTCRIACAO      DateTime  @default(now())
-  DTUPDATE       DateTime?
-  DTDELETE       DateTime?
-  QUANTIDADE     Int
-  USUARIO        USUARIO   @relation(fields: [IDUSUARIO], references: [IDUSUARIO])
-  IDUSUARIO      Int
-  PROFIT         PROFIT[]
-}
-
 model PROFIT {
   IDPROFIT       Int          @id @default(autoincrement())
   DTCRIACAO      DateTime     @default(now())
   VALOR          Float
   DESCRICAO      String
   TPPROFIT       Boolean
-  CATEGORIA      CATEGORIA    @relation(fields: [IDCATEGORIA], references: [IDCATEGORIA])
-  IDCATEGORIA    Int
-  INVESTIMENTO   INVESTIMENTO @relation(fields: [IDINVESTIMENTO], references: [IDINVESTIMENTO])
-  IDINVESTIMENTO Int
-}
-
-model CATEGORIA {
-  IDCATEGORIA Int      @id @default(autoincrement())
-  DESCRICAO   String
-  PROFIT      PROFIT[]
 }
 
 model ACESS_CODE {
@@ -72,13 +47,40 @@ model ACESS_CODE {
 }
 
 model TRANSACTIONS {
-  IDTRANSACTIONS Int       @id @default(autoincrement())
-  IDUSUARIO      Int
-  USUARIO        USUARIO   @relation(fields: [IDUSUARIO], references: [IDUSUARIO])
-  VALOR          Float
-  NOME           String
-  DESCRICAO      String
-  TIPO           String
-  DTCRIACAO      DateTime  @default(now())
-  DTEDICAO       DateTime?
+  IDTRANSACTIONS  Int          @id @default(autoincrement())
+  IDUSUARIO       Int
+  USUARIO         USUARIO      @relation(fields: [IDUSUARIO], references: [IDUSUARIO])
+  VALOR           Float
+  NOME            String
+  DESCRICAO       String
+  DTPAGAMENTO     DateTime?
+  DTCRIACAO       DateTime     @default(now())
+  DTEDICAO        DateTime?
+  TIPO            Int
+  PAYMENT_ACCOUNT String
+  PAYMENT_TYPE_ID Int
+  CATEGORIA_ID    Int
+  STATUS_ID       Int
+  PAYMENT_TYPE    PAYMENT_TYPE @relation(fields: [PAYMENT_TYPE_ID], references: [IDPAYMENTTYPE])
+  CATEGORIA       CATEGORIA    @relation(fields: [CATEGORIA_ID], references: [IDCATEGORIA])
+  STATUS          STATUS       @relation(fields: [STATUS_ID], references: [IDSTATUS])
+}
+
+model STATUS {
+  IDSTATUS     Int            @id @default(autoincrement())
+  NOME         String
+  TRANSACTIONS TRANSACTIONS[]
+}
+
+model PAYMENT_TYPE {
+  IDPAYMENTTYPE Int            @id @default(autoincrement())
+  NOME          String
+  TRANSACTIONS  TRANSACTIONS[]
+}
+
+model CATEGORIA {
+  IDCATEGORIA  Int            @id @default(autoincrement())
+  NOME         String
+  DESCRICAO    String
+  TRANSACTIONS TRANSACTIONS[]
 }

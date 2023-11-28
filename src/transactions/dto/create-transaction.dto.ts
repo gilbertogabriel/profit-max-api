@@ -1,7 +1,12 @@
 export class CreateTransactionDto {
-    userId:number;
-    value:number;
-    name: string;
-    desc?: string;
-    type: string;
+    idUsuario: number;
+    valor: number;
+    nome: string;
+    descricao: string;
+    dtPagamento?: Date;
+    tipo: number;
+    paymentAccount: string;
+    paymentTypeId: number;
+    categoriaId: number;
+    statusId: number;
 }

@@ -11,11 +11,16 @@ export class TransactionsRepository {
     async createTransaction(transaction: CreateTransactionDto): Promise<TRANSACTIONS> {
         return this.prisma.tRANSACTIONS.create({
             data: {
-                IDUSUARIO: transaction.userId,
-                VALOR: transaction.value,
-                NOME: transaction.name,
-                DESCRICAO: transaction.desc || null,
-                TIPO: transaction.type
+                IDUSUARIO: transaction.idUsuario,
+                VALOR: transaction.valor,
+                NOME: transaction.nome,
+                DESCRICAO: transaction.descricao || null,
+                DTPAGAMENTO: transaction.dtPagamento || null,
+                TIPO: transaction.tipo,
+                PAYMENT_ACCOUNT: transaction.paymentAccount,
+                PAYMENT_TYPE_ID: transaction.paymentTypeId,
+                CATEGORIA_ID: transaction.categoriaId,
+                STATUS_ID: transaction.statusId,
             }
         })
     }
@@ -37,17 +42,22 @@ export class TransactionsRepository {
     }
 
     async updateTransaction(transaction: UpdateTransactionDto): Promise<TRANSACTIONS> {
-        const actualTransaction =await this.findOneById(transaction.transactionId);
+        const actualTransaction =await this.findOneById(transaction.id);
 
         return this.prisma.tRANSACTIONS.update({
             where:{
-                IDTRANSACTIONS:transaction.transactionId
+                IDTRANSACTIONS:transaction.id
             },
             data:{
-                NOME:transaction.name || actualTransaction.NOME,
-                TIPO:transaction.type || actualTransaction.TIPO,
-                DESCRICAO:transaction.desc || actualTransaction.DESCRICAO,
-                VALOR:transaction.value || actualTransaction.VALOR,
+                NOME:transaction.nome || actualTransaction.NOME,
+                TIPO:transaction.tipo || actualTransaction.TIPO,
+                DESCRICAO:transaction.descricao || actualTransaction.DESCRICAO,
+                VALOR:transaction.valor || actualTransaction.VALOR,
+                PAYMENT_ACCOUNT: transaction.paymentAccount || actualTransaction.PAYMENT_ACCOUNT,
+                PAYMENT_TYPE_ID: transaction.paymentTypeId || actualTransaction.PAYMENT_TYPE_ID,
+                DTPAGAMENTO: transaction.dtPagamento || actualTransaction.DTPAGAMENTO,
+                CATEGORIA_ID: transaction.categoriaId || actualTransaction.CATEGORIA_ID,
+                STATUS_ID: transaction.statusId || actualTransaction.STATUS_ID,
                 DTEDICAO:new Date()
             }
         })
