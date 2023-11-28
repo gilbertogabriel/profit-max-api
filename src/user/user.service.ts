@@ -74,7 +74,7 @@ export class UserService {
       return forbbiden(new LoginError('Logir Error: Verify email or password'))
 
     let { TOKEN: token } = await this.findTokenByEmail(user.email)
-
+    
     if (!token) {
       token = this.jwt.encrypt(String(user.id))
       await this.deleteTokens(user.id)
