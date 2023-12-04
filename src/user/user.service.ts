@@ -58,13 +58,12 @@ export class UserService {
   }
 
   async searchUserByEmail(data: UserObject): Promise<HttpResponse> {
-    let userId;
+
     const error = await this.findUserByEmailValidation.validate(data)
     if (error)
       return badRequest(error)
 
     const user = await this.findUserByEmail(data.email)
-    userId = user.id;
     if (!user)
      return responseOk({ message: 'User not found' }, false)
 
