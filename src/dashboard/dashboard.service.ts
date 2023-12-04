@@ -1,15 +1,8 @@
 import { Injectable } from '@nestjs/common';
 import { PrismaClient } from '@prisma/client';
-import { Bcrypt } from 'src/class/bcrypt/bcrypt';
 import { ServerError } from 'src/class/error/server-error';
-import { Jwt } from 'src/class/jwt/jwt';
-import { createUserValidatorDecorator } from 'src/decorator/create-user-validator-decorator';
-import { findUserByEmailValidatorDecorator } from 'src/decorator/find-user-by-email-validator-decorator';
-import { BcryptSignature } from 'src/signatures/bcrypt-signature';
-import { JwtSignature } from 'src/signatures/jwt-signature';
-import { ValidationSignature } from 'src/signatures/validator-signature';
 import { HttpResponse } from 'src/utils/http';
-import { badRequest, forbbiden, responseOk, serverError } from 'src/utils/http-helper';
+import { badRequest, serverError } from 'src/utils/http-helper';
 
 
 @Injectable()
@@ -20,7 +13,7 @@ export class DashboardService {
   async getDashboard(token: string): Promise<HttpResponse> {
 
     try {
-
+      const cash = { despesa: 0, receita: 0, total: 0 }
       if (!token)
         return badRequest(new Error('Token inválido'))
 
@@ -29,7 +22,19 @@ export class DashboardService {
       if (!user)
         return { code: 200, status: false, message: 'Invalid user' }
 
-      return { code: 200, status: true, body: user }
+      const result = await this.getData(user.IDUSUARIO)
+
+      for (const element of result) {
+        if (element.TIPO == 1)
+          cash.despesa += element.VALOR
+
+        if (element.TIPO == 2)
+          cash.receita += element.VALOR
+
+        cash.total += element.VALOR
+      }
+
+      return { code: 200, status: true, body: cash }
 
     } catch (err) {
       if (err.message.match(new RegExp(/USUARIO_EMAIL_key/)))
@@ -56,6 +61,29 @@ export class DashboardService {
       return result.USUARIO
     } catch (err) {
       console.log(err.message)
+      return null
+    }
+  }
+
+  async getData(id: number): Promise<any> {
+
+    try {
+      const result = await this.prisma.tRANSACTIONS.findMany({
+        where: {
+          IDUSUARIO: id,
+          DTCRIACAO: {
+            gte: new Date(new Date().setDate(new Date().getDate() - 30))
+          }
+        },
+        include: {
+          STATUS: true,
+          CATEGORIA: true,
+          PAYMENT_TYPE: true
+        }
+      })
+
+      return result
+    } catch (err) {
       return null
     }
   }
