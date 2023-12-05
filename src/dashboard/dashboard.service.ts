@@ -1,19 +1,25 @@
 import { Injectable } from '@nestjs/common';
 import { PrismaClient } from '@prisma/client';
+import * as moment from 'moment';
 import { ServerError } from 'src/class/error/server-error';
 import { HttpResponse } from 'src/utils/http';
 import { badRequest, serverError } from 'src/utils/http-helper';
 
+type AuxDate = {
+  antes: boolean
+  hoje: boolean
+  depois: boolean
+}
 
 @Injectable()
 export class DashboardService {
 
   private readonly prisma: PrismaClient = new PrismaClient()
-
+  
   async getDashboard(token: string): Promise<HttpResponse> {
 
     try {
-      const cash = { despesa: 0, receita: 0, total: 0 }
+      const cash = { despesa: { total: 0, porcentagem: 0.0, quantidade: 0, pagamentos: { atraso: [], futuras: [], hoje: [] } }, receita: { total: 0, porcentagem: 0.0, quantidade: 0, pagamentos: { atraso: [], futuras: [], hoje: [] } }, total: { total: 0 } }
       if (!token)
         return badRequest(new Error('Token inválido'))
 
@@ -23,15 +29,60 @@ export class DashboardService {
         return { code: 200, status: false, message: 'Invalid user' }
 
       const result = await this.getData(user.IDUSUARIO)
-
       for (const element of result) {
-        if (element.TIPO == 1)
-          cash.despesa += element.VALOR
 
-        if (element.TIPO == 2)
-          cash.receita += element.VALOR
+        const data = this.compareDate(element.DTPAGAMENTO.toLocaleDateString('en-US', {
+          month: '2-digit',
+          day: '2-digit',
+          year: 'numeric',
+        }))
 
-        cash.total += element.VALOR
+        const { IDTRANSACTION, STATUS_ID, DESCRICAO, NOME } = element
+        if (element.TIPO == 1) {
+          cash.despesa.quantidade++
+          cash.despesa.total += element.VALOR
+
+          if (element.STATUS_ID !== 1) {
+            if (data.antes) {
+              cash.despesa.pagamentos.atraso.push({ IDTRANSACTION, NOME, STATUS_ID, DESCRICAO })
+              continue
+            }
+  
+            if (data.hoje) {
+              cash.despesa.pagamentos.hoje.push({ IDTRANSACTION, NOME, STATUS_ID, DESCRICAO })
+              continue
+            }
+  
+            if (data.depois) {
+              cash.despesa.pagamentos.futuras.push({ IDTRANSACTION, NOME, STATUS_ID, DESCRICAO })
+              continue
+            }
+          }
+        }
+
+        if (element.TIPO == 2) {
+          cash.receita.quantidade++
+          cash.receita.total += element.VALOR
+
+          if (element.STATUS_ID !== 1) {
+            if (data.antes) {      
+              cash.receita.pagamentos.atraso.push({ IDTRANSACTION, NOME, STATUS_ID, DESCRICAO })
+              continue
+            }
+  
+            if (data.hoje) {
+              cash.receita.pagamentos.hoje.push({ IDTRANSACTION, NOME, STATUS_ID, DESCRICAO })
+              continue
+            }
+  
+            if (data.depois) {
+              cash.receita.pagamentos.futuras.push({ IDTRANSACTION, NOME, STATUS_ID, DESCRICAO })
+              continue
+            }
+          }      
+        }
+
+        cash.total.total += element.VALOR
       }
 
       return { code: 200, status: true, body: cash }
@@ -87,4 +138,16 @@ export class DashboardService {
       return null
     }
   }
+
+  compareDate = (dataCompara: string): AuxDate  => {
+    const dataAtual: string = moment().format('MM/DD/YYYY')
+    const aux = { antes: false, hoje: false, depois: false }
+
+    aux.antes = moment(dataCompara).isBefore(moment(dataAtual))
+    aux.hoje = moment(dataCompara).isSame(moment(dataAtual))
+    aux.depois = moment(dataCompara).isAfter(moment(dataAtual))
+
+    return aux
+  }
+
 }
