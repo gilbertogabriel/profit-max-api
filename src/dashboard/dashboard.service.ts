@@ -30,8 +30,8 @@ export class DashboardService {
 
       const result = await this.getData(user.IDUSUARIO)
       for (const element of result) {
-
-        const data = this.compareDate(element.DTPAGAMENTO.toLocaleDateString('en-US', {
+        const aux = new Date(element.DTPAGAMENTO); aux.setHours(3);
+        const data = this.compareDate(aux.toLocaleDateString('en-US', {
           month: '2-digit',
           day: '2-digit',
           year: 'numeric',
