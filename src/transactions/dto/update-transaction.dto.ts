@@ -1,5 +1,5 @@
 export class UpdateTransactionDto  {
-    id: number;
+    transactionId: number;
     idUsuario: number;
     valor: number;
     nome: string;
