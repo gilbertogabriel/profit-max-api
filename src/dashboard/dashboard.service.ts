@@ -29,7 +29,27 @@ export class DashboardService {
         return { code: 200, status: false, message: 'Invalid user' }
 
       const result = await this.getData(user.IDUSUARIO)
-      for (const element of result) {
+      const categorias = { 
+          LAZER           : { id: 1, percent: 0.0, quantidade: 0, total: 0.0 }
+        , RECORRENTE      : { id: 2, percent: 0.0, quantidade: 0, total: 0.0 }
+        , 'BENS MATERIAIS': { id: 3, percent: 0.0, quantidade: 0, total: 0.0 }
+        , EXTRA           : { id: 4, percent: 0.0, quantidade: 0, total: 0.0 }   
+      }
+
+      const pagamentos = {
+        'Credito em conta' : { id: 1, percent: 0.0, quantidade: 0, total: 0.0 }
+      , 'Boleto'           : { id: 2, percent: 0.0, quantidade: 0, total: 0.0 }
+      , 'Debito Automático': { id: 3, percent: 0.0, quantidade: 0, total: 0.0 }
+      , 'Conta Corrente'   : { id: 4, percent: 0.0, quantidade: 0, total: 0.0 }
+      , 'Dinheiro'         : { id: 5, percent: 0.0, quantidade: 0, total: 0.0 }
+      , 'Contra-cheque'    : { id: 6, percent: 0.0, quantidade: 0, total: 0.0 }
+      , 'Cartão de Crédito': { id: 7, percent: 0.0, quantidade: 0, total: 0.0 }
+      , 'Cartão de Débito' : { id: 8, percent: 0.0, quantidade: 0, total: 0.0 }
+      , 'PIX'              : { id: 9, percent: 0.0, quantidade: 0, total: 0.0 }
+    }
+    
+    for (const element of result) {
+
         const aux = new Date(element.DTPAGAMENTO); aux.setHours(3);
         const data = this.compareDate(aux.toLocaleDateString('en-US', {
           month: '2-digit',
@@ -37,55 +57,55 @@ export class DashboardService {
           year: 'numeric',
         }))
 
-        const { IDTRANSACTION, STATUS_ID, DESCRICAO, NOME } = element
-        if (element.TIPO == 1) {
+        const { TIPO, VALOR, IDTRANSACTION, STATUS_ID, DESCRICAO, NOME, CATEGORIA, PAYMENT_TYPE } = element
+        if (TIPO == 1) {
           cash.despesa.quantidade++
-          cash.despesa.total += element.VALOR
+          cash.despesa.total += VALOR
 
-          if (element.STATUS_ID !== 1) {
+          if (STATUS_ID !== 1) {
             if (data.antes) {
               cash.despesa.pagamentos.atraso.push({ IDTRANSACTION, NOME, STATUS_ID, DESCRICAO })
-              continue
             }
   
             if (data.hoje) {
               cash.despesa.pagamentos.hoje.push({ IDTRANSACTION, NOME, STATUS_ID, DESCRICAO })
-              continue
             }
   
             if (data.depois) {
               cash.despesa.pagamentos.futuras.push({ IDTRANSACTION, NOME, STATUS_ID, DESCRICAO })
-              continue
             }
           }
         }
 
-        if (element.TIPO == 2) {
+        if (TIPO == 2) {
           cash.receita.quantidade++
-          cash.receita.total += element.VALOR
+          cash.receita.total += VALOR
 
-          if (element.STATUS_ID !== 1) {
+          if (STATUS_ID !== 1) {
             if (data.antes) {      
               cash.receita.pagamentos.atraso.push({ IDTRANSACTION, NOME, STATUS_ID, DESCRICAO })
-              continue
             }
   
             if (data.hoje) {
               cash.receita.pagamentos.hoje.push({ IDTRANSACTION, NOME, STATUS_ID, DESCRICAO })
-              continue
             }
   
             if (data.depois) {
               cash.receita.pagamentos.futuras.push({ IDTRANSACTION, NOME, STATUS_ID, DESCRICAO })
-              continue
             }
           }      
         }
 
-        cash.total.total += element.VALOR
+        categorias[CATEGORIA.NOME].quantidade += 1
+        categorias[CATEGORIA.NOME].percent = (categorias[CATEGORIA.NOME].quantidade/result.length*100).toFixed(2)
+        categorias[CATEGORIA.NOME].total += VALOR
+        pagamentos[PAYMENT_TYPE.NOME].quantidade += 1
+        pagamentos[PAYMENT_TYPE.NOME].percent = (pagamentos[PAYMENT_TYPE.NOME].quantidade/result.length*100).toFixed(2)
+        pagamentos[PAYMENT_TYPE.NOME].total += VALOR
+        cash.total.total += VALOR
       }
 
-      return { code: 200, status: true, body: cash }
+      return { code: 200, status: true, body: { ...cash, categorias, pagamentos } }
 
     } catch (err) {
       if (err.message.match(new RegExp(/USUARIO_EMAIL_key/)))
