@@ -4,79 +4,7 @@ import * as moment from 'moment';
 import { ServerError } from 'src/class/error/server-error';
 import { HttpResponse } from 'src/utils/http';
 import { badRequest, responseOk, serverError } from 'src/utils/http-helper';
-
-type AuxDate = {
-  antes: boolean
-  hoje: boolean
-  depois: boolean
-}
-
-type Saldo = {
-  data: string
-  saldo: number
-}
-
-type Percent = { 
-  id: number, 
-  percent: number, 
-  quantidade: number, 
-  total: number
-}
-
-type CategoryPercent = {
-    LAZER           : Percent
-  , RECORRENTE      : Percent
-  , 'BENS MATERIAIS': Percent
-  , EXTRA           : Percent 
-}
-
-type PaymentPercent = {
-    'Credito em conta' : Percent
-  , 'Boleto'           : Percent
-  , 'Debito Automático': Percent
-  , 'Conta Corrente'   : Percent
-  , 'Dinheiro'         : Percent
-  , 'Contra-cheque'    : Percent
-  , 'Cartão de Crédito': Percent
-  , 'Cartão de Débito' : Percent
-  , 'PIX'              : Percent
-}
-
-type ObjectLate = { 
-    IDTRANSACTION: number
-  , NOME: string
-  , STATUS_ID: number
-  , DESCRICAO : string
-  , VALOR: number
-}
-
-type PaymentDashboard = { 
-    total: number
-  , percent: number
-  , quantidade: number
-  , pagamentos: NextPayments
-}
-type NextPayments = { 
-  atraso : Array<NextPaymentsObj>
-  futuras: Array<NextPaymentsObj> 
-  hoje   : Array<NextPaymentsObj> 
-}
-
-type NextPaymentsObj = {
-  NOME: string
-  STATUS_ID: number
-  DESCRICAO: string
-}
-
-type Total = {
-  saldo: number
-}
-
-type Cash = {
-  despesa: PaymentDashboard
-  receita: PaymentDashboard
-  total: Total
-}
+import { AuxDate, Cash, CategoryPercent, ObjectLate, PaymentDashboard, Saldo } from './dto/dashboard.dto';
 
 @Injectable()
 export class DashboardService {
@@ -87,12 +15,12 @@ export class DashboardService {
 
     try {
       if (!token)
-      return badRequest(new Error('Token inválido'))
+        return badRequest(new Error('Token inválido'))
     
       const user = await this.findUserbyToken(token)
       
       if (!user)
-      return { code: 200, status: false, message: 'Invalid user' }
+      return { code: 200, status: false, message: 'Usuário não encontrado' }
     
       const cash: Cash = { 
           despesa: { total: 0, percent: 0.0, quantidade: 0, pagamentos: { atraso: [], futuras: [], hoje: [] } }
