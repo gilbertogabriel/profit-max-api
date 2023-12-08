@@ -27,7 +27,7 @@ export class TransactionsController {
     return this.transactionsService.update(updateTransactionDto);
   }
 
-  @Delete(':id')
+  @Delete('/:id')
   remove(@Param('id') id: string) {
     return this.transactionsService.remove(+id);
   }
