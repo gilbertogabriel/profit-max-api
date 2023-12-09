@@ -21,7 +21,8 @@ export class DashboardService {
       
       if (!user)
         return { code: 200, status: false, message: 'Usuário não encontrado' }
-    
+
+ 
       const cash: Cash = { 
           despesa: { total: 0, percent: 0.0, quantidade: 0, pagamentos: { atraso: [], futuras: [], hoje: [] } }
         , receita: { total: 0, percent: 0.0, quantidade: 0, pagamentos: { atraso: [], futuras: [], hoje: [] } }
@@ -46,6 +47,7 @@ export class DashboardService {
         , 'PIX'              : { id: 9, percent: 0.0, quantidade: 0, total: 0.0 }
       }
       
+
       const movimentacao: Array<Saldo> = []
 
       for (const element of result) {
