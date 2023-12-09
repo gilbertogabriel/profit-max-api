@@ -20,12 +20,12 @@ export class DashboardService {
       const user = await this.findUserbyToken(token)
       
       if (!user)
-      return { code: 200, status: false, message: 'Usuário não encontrado' }
+        return { code: 200, status: false, message: 'Usuário não encontrado' }
     
       const cash: Cash = { 
           despesa: { total: 0, percent: 0.0, quantidade: 0, pagamentos: { atraso: [], futuras: [], hoje: [] } }
         , receita: { total: 0, percent: 0.0, quantidade: 0, pagamentos: { atraso: [], futuras: [], hoje: [] } }
-        , total  : { saldo: 0 } 
+        , saldo_atual: 0
       }
       const result = await this.getData(user.IDUSUARIO)
       const categorias: CategoryPercent = { 
@@ -46,7 +46,7 @@ export class DashboardService {
         , 'PIX'              : { id: 9, percent: 0.0, quantidade: 0, total: 0.0 }
       }
       
-      const saldo: Array<Saldo> = []
+      const movimentacao: Array<Saldo> = []
 
       for (const element of result) {
         const hour = 60*60*1000
@@ -70,7 +70,7 @@ export class DashboardService {
           cash.despesa.total += VALOR
           cash.despesa.percent = (cash.despesa.quantidade/result.length)*100
 
-          if (STATUS_ID !== 1) {
+          if ([2,3].includes(STATUS_ID)) {
             this.getRunningLate(cash.despesa, data, { IDTRANSACTION, NOME, STATUS_ID, DESCRICAO, VALOR })
           }
         }
@@ -80,7 +80,7 @@ export class DashboardService {
           cash.receita.total += VALOR
           cash.receita.percent = (cash.receita.quantidade/result.length)*100
 
-          if (STATUS_ID !== 1) {
+          if ([2,3].includes(STATUS_ID)) {
             this.getRunningLate(cash.receita, data, { IDTRANSACTION, NOME, STATUS_ID, DESCRICAO, VALOR })
           }      
         }
@@ -101,26 +101,30 @@ export class DashboardService {
         else
           pagamentos[PAYMENT_TYPE.NOME].total += VALOR
 
-        if (saldo.length > 0) {
-          const filtro = saldo.filter(data => data.data == dtcriacao_str) ?? null 
-          if (!!filtro.length)
-            if (TIPO == 1)
-              saldo[saldo.indexOf(filtro[0])].saldo -= VALOR
-            else
-              saldo[saldo.indexOf(filtro[0])].saldo += VALOR
-          else
-            saldo.push({data: dtcriacao_str, saldo: TIPO == 1 ? -VALOR : VALOR })
+        if (movimentacao.length > 0) {
+          const filtro = movimentacao.filter(data => data.data == dtcriacao_str) ?? null
+          if (!!filtro.length) {
+            if (TIPO == 1) {
+              movimentacao[movimentacao.indexOf(filtro[0])].saldo -= VALOR
+              movimentacao[movimentacao.indexOf(filtro[0])].movimentacao_total += VALOR
+            } else {
+              movimentacao[movimentacao.indexOf(filtro[0])].saldo += VALOR
+              movimentacao[movimentacao.indexOf(filtro[0])].movimentacao_total += VALOR
+            }
+          } else {
+            movimentacao.push({ data: dtcriacao_str, saldo: TIPO == 1 ? -VALOR : VALOR, movimentacao_total: VALOR })
+          }
         } else {
-          saldo.push({ data: dtcriacao_str, saldo: TIPO == 1 ? -VALOR : VALOR })
+          movimentacao.push({ data: dtcriacao_str, saldo: TIPO == 1 ? -VALOR : VALOR, movimentacao_total: VALOR  })
         }
 
-        if (TIPO == 1)
-          cash.total.saldo -= VALOR
-        else
-          cash.total.saldo += VALOR
+        if (TIPO == 1 && [1].includes(STATUS_ID))
+          cash.saldo_atual -= VALOR
+        else if (TIPO == 2 && [1].includes(STATUS_ID))
+          cash.saldo_atual += VALOR
       }
       
-      return responseOk({ ...cash, categorias, pagamentos, saldo })
+      return responseOk({ ...cash, categorias, pagamentos, movimentacao })
 
     } catch (err) {
       if (err.message.match(new RegExp(/USUARIO_EMAIL_key/)))

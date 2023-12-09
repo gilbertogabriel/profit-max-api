@@ -11,6 +11,7 @@ export type AuxDate = {
   export type Saldo = {
     data: string
     saldo: number
+    movimentacao_total: number
   }
   
   export type Percent = { 
@@ -72,5 +73,5 @@ export type AuxDate = {
   export type Cash = {
     despesa: PaymentDashboard
     receita: PaymentDashboard
-    total: Total
+    saldo_atual: number
   }
