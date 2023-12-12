@@ -43,6 +43,7 @@ export type AuxDate = {
   export type ObjectLate = { 
       IDTRANSACTION: number
     , NOME: string
+    , DTPAGAMENTO: string
     , STATUS_ID: number
     , DESCRICAO : string
     , VALOR: number
