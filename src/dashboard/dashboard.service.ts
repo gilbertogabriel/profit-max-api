@@ -73,7 +73,7 @@ export class DashboardService {
           cash.despesa.percent = (cash.despesa.quantidade/result.length)*100
 
           if ([2,3].includes(STATUS_ID)) {
-            this.getRunningLate(cash.despesa, data, { IDTRANSACTION, NOME, STATUS_ID, DESCRICAO, VALOR })
+            this.getRunningLate(cash.despesa, data, { IDTRANSACTION, NOME, STATUS_ID, DESCRICAO, VALOR, DTPAGAMENTO: element.DTPAGAMENTO })
           }
         }
 
@@ -83,7 +83,7 @@ export class DashboardService {
           cash.receita.percent = (cash.receita.quantidade/result.length)*100
 
           if ([2,3].includes(STATUS_ID)) {
-            this.getRunningLate(cash.receita, data, { IDTRANSACTION, NOME, STATUS_ID, DESCRICAO, VALOR })
+            this.getRunningLate(cash.receita, data, { IDTRANSACTION, NOME, STATUS_ID, DESCRICAO, VALOR, DTPAGAMENTO: element.DTPAGAMENTO  })
           }      
         }
 
